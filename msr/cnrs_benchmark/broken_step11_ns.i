@@ -4,7 +4,7 @@ mu=50.
 rho=2000.
 alpha = 2.e-4
 cp = 3075 #6.15e6
-k = 0.0000001 #missing the thermal conductivity
+k = 0.0000001
 Pr_t = 3.075e5
 Sc_t = 2.0e8
 
@@ -57,8 +57,10 @@ beta7 = 1.66016e-4
     xmax = 2.
     ymin = 0
     ymax = 2.
-    nx = 100
-    ny = 100
+    # nx = 100
+    # ny = 100
+    nx = 10
+    ny = 10
   []
   # [sidesets]
   #   # Sets boundary names for the BCs block
@@ -85,8 +87,6 @@ beta7 = 1.66016e-4
     # Material properties
     density = ${rho}
     dynamic_viscosity = ${mu}
-
-    # These material properties we do not have
     thermal_conductivity = ${k}
     specific_heat = 'cp'
     thermal_expansion = ${alpha}
@@ -95,7 +95,7 @@ beta7 = 1.66016e-4
     gravity = '0 -9.81 0'
 
     # Initial conditions
-    initial_velocity = '0.5 0 0'
+    initial_velocity = '1e-6 1e-6 0'
     initial_temperature = '900'
 
     # Boundary conditions

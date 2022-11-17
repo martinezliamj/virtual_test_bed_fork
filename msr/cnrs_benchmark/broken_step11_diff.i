@@ -13,6 +13,8 @@
     ymax = 2
     nx = 100
     ny = 100
+    # nx = 10
+    # ny = 10
   []
 []
 
@@ -28,6 +30,10 @@
     family = LAGRANGE
     order = FIRST
     fission_source_aux = true
+
+    # For PJFNKMO
+    # assemble_scattering_jacobian = true
+    # assemble_fission_jacobian = true
   []
 []
 
@@ -143,6 +149,19 @@
   nl_abs_tol = 1e-9
   # picard_max_its = 100
   fixed_point_max_its = 10
+
+  # type = Eigenvalue
+  # solve_type = PJFNKMO
+
+  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart '
+  # petsc_options_value = 'hypre boomeramg 50'
+  # l_max_its = 50
+
+  # free_power_iterations = 4  # important to obtain fundamental mode eigenvalue
+
+  # nl_abs_tol = 1e-9
+  # fixed_point_abs_tol = 1e-9
+  # fixed_point_max_its = 20
 []
 
 [VectorPostprocessors]
@@ -179,104 +198,109 @@
   []
 []
 
-[MultiApps]
-# This input ile is the master app, and step11_ns.i s the subapp that solves Navier-Stokes
-  [ns]
-    type = FullSolveMultiApp
-    input_files = broken_step11_ns.i
-    execute_on = 'timestep_begin'
-  []
-[]
+# [MultiApps]
+# # This input ile is the master app, and step11_ns.i s the subapp that solves Navier-Stokes
+#   [ns]
+#     type = FullSolveMultiApp
+#     input_files = broken_step11_ns.i
+#     execute_on = 'NONLINEAR'
+#   []
+# []
 
-[Transfers]
-#fission_source and power_density have to be removed because the subapp does not have these
-  # [fission_source]
-  # # The master app gives the subapp the fission source to calculate NS
-  #   type = MultiAppNearestNodeTransfer
-  #   #multi_app = ns
-  #   #direction = to_multiapp
-  #   to_multi_app = ns
-  #   source_variable = FRD
-  #   variable = FRD
-  # []
-  [fission_source]
-    type = MultiAppShapeEvaluationTransfer
-    to_multi_app = ns
-    source_variable = fission_source
-    variable = fission_source
-  []
-  [power_density]
-    type = MultiAppShapeEvaluationTransfer
-    to_multi_app = ns
-    source_variable = power
-    variable = power_density
-  []
-  # All these transfers are the subapp solving for these dnp groups to give those values back
-  # to the master app
-  [c0]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c0'
-    variable = 'c0'
-  []
-  [c1]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c1'
-    variable = 'c1'
-  []
-  [c2]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c2'
-    variable = 'c2'
-  []
-  [c3]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c3'
-    variable = 'c3'
-  []
-  [c4]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c4'
-    variable = 'c4'
-  []
-  [c5]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c5'
-    variable = 'c5'
-  []
-  [c6]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c6'
-    variable = 'c6'
-  []
-  [c7]
-    type =  MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = 'c7'
-    variable = 'c7'
-  []
-  [u]
-    type = MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = vel_x
-    variable = u
-  []
-  [v]
-    type = MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = vel_y
-    variable = v
-  []
-  [pressure]
-    type = MultiAppShapeEvaluationTransfer
-    from_multi_app = ns
-    source_variable = pressure
-    variable = pressure
-  []
+# [Transfers]
+# #fission_source and power_density have to be removed because the subapp does not have these
+#   # [fission_source]
+#   # # The master app gives the subapp the fission source to calculate NS
+#   #   type = MultiAppNearestNodeTransfer
+#   #   #multi_app = ns
+#   #   #direction = to_multiapp
+#   #   to_multi_app = ns
+#   #   source_variable = FRD
+#   #   variable = FRD
+#   # []
+#   [fission_source]
+#     type = MultiAppCopyTransfer
+#     to_multi_app = ns
+#     source_variable = fission_source
+#     variable = fission_source
+#   []
+#   [power_density]
+#     type = MultiAppCopyTransfer
+#     to_multi_app = ns
+#     source_variable = power
+#     variable = power_density
+#   []
+#   # All these transfers are the subapp solving for these dnp groups to give those values back
+#   # to the master app
+#   [c0]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c0'
+#     variable = 'c0'
+#   []
+#   [c1]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c1'
+#     variable = 'c1'
+#   []
+#   [c2]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c2'
+#     variable = 'c2'
+#   []
+#   [c3]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c3'
+#     variable = 'c3'
+#   []
+#   [c4]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c4'
+#     variable = 'c4'
+#   []
+#   [c5]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c5'
+#     variable = 'c5'
+#   []
+#   [c6]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c6'
+#     variable = 'c6'
+#   []
+#   [c7]
+#     type =  MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = 'c7'
+#     variable = 'c7'
+#   []
+#   [u]
+#     type = MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = vel_x
+#     variable = u
+#   []
+#   [v]
+#     type = MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = vel_y
+#     variable = v
+#   []
+#   [pressure]
+#     type = MultiAppCopyTransfer
+#     from_multi_app = ns
+#     source_variable = pressure
+#     variable = pressure
+#   []
+# []
+
+[Outputs]
+  exodus = true
+  csv = true
 []
