@@ -5,23 +5,8 @@ k = 0.01
 mu=50.
 
 Sc_t = 2.0e8
-#
-#lambda0 = -1.24667e-2
-#lambda1 = -2.82917e-2
 lambda2 = -4.25244e-2
-#lambda3 = -1.33042e-1
-#lambda4 = -2.92467e-1
-#lambda5 = -6.66488e-1
-#lambda6 = -1.63478
-#lambda7 = -3.55460
-#beta0   = 2.33102e-4
-#beta1   = 1.03262e-3
 beta2   = 6.81878e-4
-#beta3   = 1.37726e-3
-#beta4   = 2.14493e-3
-#beta5   = 6.40917e-4
-#beta6   = 6.05805e-4
-#beta7   = 1.66016e-4
 
 [Mesh]
   [gen]
@@ -33,6 +18,13 @@ beta2   = 6.81878e-4
     ymax = 2.
     nx = 50
     ny = 50
+  []
+  [sidesets]
+    # Sets boundary names for the BCs block
+    type = RenameBoundaryGenerator
+    input = gen
+    old_boundary = '0 1 2 3'
+    new_boundary = 'bottom right top left'
   []
 []
 
@@ -49,6 +41,10 @@ beta2   = 6.81878e-4
     specific_heat = 'cp'
     thermal_expansion = ${alpha}
 
+    # External variables
+    #velocity_variable = 'u2 v2'
+    #pressure_variable = 'p2'
+
     # Boussinesq parameters
     gravity = '0 -9.81 0'
 
@@ -57,7 +53,7 @@ beta2   = 6.81878e-4
     initial_temperature = 900
     initial_pressure = 1e5
     ref_temperature = 900
-    
+
     # Boundary conditions
     inlet_boundaries = 'top'
     momentum_inlet_types = 'fixed-velocity'
@@ -74,18 +70,16 @@ beta2   = 6.81878e-4
     pinned_pressure_type = average
     pinned_pressure_value = 1e5
 
-    # Heat source
-    # external_heat_source = power_density
-
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
     momentum_advection_interpolation = 'upwind'
     mass_advection_interpolation = 'upwind'
     energy_two_term_bc_expansion = false
 
-    energy_scaling = 0.001
+    # energy_scaling = 0.001
+    energy_scaling = 1e-7
     momentum_scaling = 0.1
-    
+
     passive_scalar_inlet_types = 'fixed-value'
     passive_scalar_inlet_function = '1' # Placeholder
     # Precursor advection, diffusion and source term
@@ -96,16 +90,118 @@ beta2   = 6.81878e-4
   []
 []
 
+#[GlobalParams]
+#  rhie_chow_user_object = 'ins_rhie_chow_interpolator' #'rc'
+#[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+    block = '0'
+  []
+[]
+
 [Variables]
+  inactive = 'vel_x vel_y pressure T_fluid scalar'
+  [vel_x]
+    type = 'INSFVVelocityVariable'
+    initial_condition = 0.5
+    block=0
+  []
+  [vel_y]
+    type = 'INSFVVelocityVariable'
+    initial_condition = 0
+    block=0
+  []
+  [pressure]
+    type = 'INSFVPressureVariable'
+    initial_condition = 1e5
+    block=0
+  []
+  [T_fluid]
+    type = 'INSFVEnergyVariable'
+    initial_condition = 900
+  []
+  [scalar]
+    type = MooseVariableFVReal
+  []
   [c2]
     type = MooseVariableFVReal
   []
+  # [u2]
+  #   type = INSFVVelocityVariable
+  #   block = '0'
+  # []
+  # [v2]
+  #   type = INSFVVelocityVariable
+  #   block = '0'
+  # []
+  # [p2]
+  #   type = INSFVPressureVariable
+  #   block = '0'
+  #   initial_condition = 1e5
+  # []
 []
+
+# [FVBCs]
+#   # x-direction BCs
+#   [bottom_u]
+#     type = FVDirichletBC
+#     variable = u2
+#     boundary = 'bottom'
+#     value = 0.0
+#   []
+#   [right_u]
+#     type = FVDirichletBC
+#     variable = u2
+#     boundary = 'right'
+#     value = 0.0
+#   []
+#   [left_u]
+#     type = FVDirichletBC
+#     variable = u2
+#     boundary = 'left'
+#     value = 0.0
+#   []
+#   [top_u]
+#     type = FVDirichletBC
+#     variable = u2
+#     boundary = 'top'
+#     value = 0.5
+#   []
+#   # y-direction BCs
+#   [bottom_v]
+#     type = FVDirichletBC
+#     variable = v2
+#     boundary = 'bottom'
+#     value = 0.0
+#   []
+#   [right_v]
+#     type = FVDirichletBC
+#     variable = v2
+#     boundary = 'right'
+#     value = 0.0
+#   []
+#   [left_v]
+#     type = FVDirichletBC
+#     variable = v2
+#     boundary = 'left'
+#     value = 0.0
+#   []
+#   [top_v]
+#     type = FVDirichletBC
+#     variable = v2
+#     boundary = 'top'
+#     value = 0.0
+#   []
+# []
 
 [AuxVariables]
   [fission_source]
     type = MooseVariableFVReal
-    #initial_condition =100.0
   []
 []
 
@@ -121,6 +217,24 @@ beta2   = 6.81878e-4
   show_var_residual_norms = True
 []
 
+# [Postprocessors]
+#   [u2]
+#     type = ScalarVariable
+#     variable = u2
+#     execute_on = 'TIMESTEP_END'
+#   []
+#   [v2]
+#     type = ScalarVariable
+#     variable = v2
+#     execute_on = 'TIMESTEP_END'
+#   []
+#   [p2]
+#     type = ScalarVariable
+#     variable = p2
+#     execute_on = 'TIMESTEP_END'
+#   []
+# []
+
 [Executioner]
   type = Steady
   solve_type = 'NEWTON'
@@ -132,4 +246,3 @@ beta2   = 6.81878e-4
 [Outputs]
   exodus = true
 []
-

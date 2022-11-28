@@ -5,23 +5,8 @@ k = 0.01
 mu=50.
 
 Sc_t = 2.0e8
-#
-#lambda0 = -1.24667e-2
-#lambda1 = -2.82917e-2
-#lambda2 = -4.25244e-2
-#lambda3 = -1.33042e-1
 lambda4 = -2.92467e-1
-#lambda5 = -6.66488e-1
-#lambda6 = -1.63478
-#lambda7 = -3.55460
-#beta0   = 2.33102e-4
-#beta1   = 1.03262e-3
-#beta2   = 6.81878e-4
-#beta3   = 1.37726e-3
 beta4   = 2.14493e-3
-#beta5   = 6.40917e-4
-#beta6   = 6.05805e-4
-#beta7   = 1.66016e-4
 
 [Mesh]
   [gen]
@@ -57,7 +42,7 @@ beta4   = 2.14493e-3
     initial_temperature = 900
     initial_pressure = 1e5
     ref_temperature = 900
-    
+
     # Boundary conditions
     inlet_boundaries = 'top'
     momentum_inlet_types = 'fixed-velocity'
@@ -74,18 +59,16 @@ beta4   = 2.14493e-3
     pinned_pressure_type = average
     pinned_pressure_value = 1e5
 
-    # Heat source
-    # external_heat_source = power_density
-
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
     momentum_advection_interpolation = 'upwind'
     mass_advection_interpolation = 'upwind'
     energy_two_term_bc_expansion = false
 
-    energy_scaling = 0.001
+    # energy_scaling = 0.001
+    energy_scaling = 1e-7
     momentum_scaling = 0.1
-    
+
     passive_scalar_inlet_types = 'fixed-value'
     passive_scalar_inlet_function = '1' # Placeholder
     # Precursor advection, diffusion and source term
@@ -105,7 +88,6 @@ beta4   = 2.14493e-3
 [AuxVariables]
   [fission_source]
     type = MooseVariableFVReal
-    #initial_condition =100.0
   []
 []
 
@@ -132,4 +114,3 @@ beta4   = 2.14493e-3
 [Outputs]
   exodus = true
 []
-
