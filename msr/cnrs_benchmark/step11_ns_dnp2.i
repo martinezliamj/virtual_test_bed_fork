@@ -19,13 +19,6 @@ beta2   = 6.81878e-4
     nx = 50
     ny = 50
   []
-  [sidesets]
-    # Sets boundary names for the BCs block
-    type = RenameBoundaryGenerator
-    input = gen
-    old_boundary = '0 1 2 3'
-    new_boundary = 'bottom right top left'
-  []
 []
 
 [Modules]
@@ -46,12 +39,12 @@ beta2   = 6.81878e-4
     #pressure_variable = 'p2'
 
     # Boussinesq parameters
-    gravity = '0 -9.81 0'
+    gravity = '0 0 0'
 
     # Initial conditions
     initial_velocity = '0.5 1e-6 0'
     initial_temperature = 900
-    initial_pressure = 1e5
+    initial_pressure = 0
     ref_temperature = 900
 
     # Boundary conditions
@@ -68,7 +61,7 @@ beta2   = 6.81878e-4
 
     pin_pressure = true
     pinned_pressure_type = average
-    pinned_pressure_value = 1e5
+    pinned_pressure_value = 0
 
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
@@ -113,7 +106,7 @@ beta2   = 6.81878e-4
   []
   [vel_y]
     type = 'INSFVVelocityVariable'
-    initial_condition = 0
+    initial_condition = 1e-6
     block=0
   []
   [pressure]
@@ -216,24 +209,6 @@ beta2   = 6.81878e-4
 [Debug]
   show_var_residual_norms = True
 []
-
-# [Postprocessors]
-#   [u2]
-#     type = ScalarVariable
-#     variable = u2
-#     execute_on = 'TIMESTEP_END'
-#   []
-#   [v2]
-#     type = ScalarVariable
-#     variable = v2
-#     execute_on = 'TIMESTEP_END'
-#   []
-#   [p2]
-#     type = ScalarVariable
-#     variable = p2
-#     execute_on = 'TIMESTEP_END'
-#   []
-# []
 
 [Executioner]
   type = Steady

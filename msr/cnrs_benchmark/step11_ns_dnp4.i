@@ -35,12 +35,12 @@ beta4   = 2.14493e-3
     thermal_expansion = ${alpha}
 
     # Boussinesq parameters
-    gravity = '0 -9.81 0'
+    gravity = '0 0 0'
 
     # Initial conditions
     initial_velocity = '0.5 1e-6 0'
     initial_temperature = 900
-    initial_pressure = 1e5
+    initial_pressure = 0
     ref_temperature = 900
 
     # Boundary conditions
@@ -57,7 +57,7 @@ beta4   = 2.14493e-3
 
     pin_pressure = true
     pinned_pressure_type = average
-    pinned_pressure_value = 1e5
+    pinned_pressure_value = 0
 
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
@@ -69,7 +69,17 @@ beta4   = 2.14493e-3
     energy_scaling = 1e-7
     momentum_scaling = 0.1
 
-    passive_scalar_inlet_types = 'fixed-value'
+
+    passive_scalar_names = 'c1 c2 c3 c4 c5 c6'
+    passive_scalar_schmidt_number = '${Sc_t} ${Sc_t} ${Sc_t} ${Sc_t} ${Sc_t} ${Sc_t}'
+    passive_scalar_coupled_source = 'fission_source c1; fission_source c2; fission_source c3;
+                                     fission_source c4; fission_source c5; fission_source c6;'
+    passive_scalar_coupled_source_coeff = '${beta1} ${lambda1_m}; ${beta2} ${lambda2_m};
+                                           ${beta3} ${lambda3_m}; ${beta4} ${lambda4_m};
+                                           ${beta5} ${lambda5_m}; ${beta6} ${lambda6_m}'
+
+    passive_scalar_inlet_types = 'flux-velocity'
+    passive_scalar_advection_interpolation = 'upwind'
     passive_scalar_inlet_function = '1' # Placeholder
     # Precursor advection, diffusion and source term
     passive_scalar_names = 'c4'

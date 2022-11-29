@@ -19,13 +19,6 @@ beta0   = 2.33102e-4
     nx = 50
     ny = 50
   []
-  [sidesets]
-    # Sets boundary names for the BCs block
-    type = RenameBoundaryGenerator
-    input = gen
-    old_boundary = '0 1 2 3'
-    new_boundary = 'bottom right top left'
-  []
 []
 
 [Modules]
@@ -33,7 +26,7 @@ beta0   = 2.33102e-4
     compressibility = 'incompressible'
     add_energy_equation = true
     add_scalar_equation = true
-    #boussinesq_approximation = true
+    boussinesq_approximation = true
 
     density = ${rho}
     dynamic_viscosity = 'mu'
@@ -46,12 +39,12 @@ beta0   = 2.33102e-4
     #pressure_variable = 'p0'
 
     # Boussinesq parameters
-    gravity = '0 -9.81 0'
+    gravity = '0 0 0'
 
     # Initial conditions
     initial_velocity = '0.5 1e-6 0'
     initial_temperature = 900
-    initial_pressure = 1e5
+    initial_pressure = 0
     ref_temperature = 900
 
     # Boundary conditions
@@ -68,7 +61,7 @@ beta0   = 2.33102e-4
 
     pin_pressure = true
     pinned_pressure_type = average
-    pinned_pressure_value = 1e5
+    pinned_pressure_value = 0
 
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
@@ -218,21 +211,6 @@ beta0   = 2.33102e-4
 []
 
 [Postprocessors]
-#   [u0]
-#     type = ScalarVariable
-#     variable = u0
-#     execute_on = 'TIMESTEP_END'
-#   []
-#   [v0]
-#     type = ScalarVariable
-#     variable = v0
-#     execute_on = 'TIMESTEP_END'
-#   []
-#   [p0]
-#     type = ScalarVariable
-#     variable = p0
-#     execute_on = 'TIMESTEP_END'
-#   []
   [total_fission_source]
     type = ElementAverageValue
     variable = fission_source

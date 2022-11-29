@@ -1,3 +1,19 @@
+################################################################################
+## Molten Salt Fast Reactor - CNRS Benchmark step 1.1                         ##
+## Main application                                                           ##
+## This runs an application for neutronics within Griffin                     ##
+################################################################################
+
+[PowerDensity]
+  power = 1e9
+  power_density_variable = power
+  power_scaling_postprocessor = power_scaling
+[]
+
+################################################################################
+# GEOMETRY
+################################################################################
+
 [Mesh]
   [gen]
     type = GeneratedMeshGenerator
@@ -12,6 +28,10 @@
     #ny = 100
   []
 []
+
+################################################################################
+# TRANSPORT SYSTEMS
+################################################################################
 
 [TransportSystems]
   particle = neutron
@@ -28,11 +48,9 @@
   []
 []
 
-[PowerDensity]
-  power = 1e9
-  power_density_variable = power
-  power_scaling_postprocessor = power_scaling
-[]
+################################################################################
+# AUXVARIABLES AND AUXKERNELS
+################################################################################
 
 [AuxVariables]
   [tfuel]
@@ -44,7 +62,6 @@
   [c0]
     order = CONSTANT
     family = MONOMIAL
-    #block = '0'
   []
   [c1]
     order = CONSTANT
@@ -90,6 +107,11 @@
   []
 []
 
+################################################################################
+# MATERIALS
+################################################################################
+
+# Cross sections for the six neutron energy groups
 [Materials]
   [nm]
     type = ConstantNeutronicsMaterial
@@ -102,6 +124,9 @@
   []
 []
 
+################################################################################
+# EXECUTION / SOLVE
+################################################################################
 
 [Executioner]
   type = Eigenvalue
@@ -111,10 +136,13 @@
   free_power_iterations = 2
   nl_abs_tol = 1e-6
   fixed_point_rel_tol = 1e-5
-  # picard_max_its = 100
   fixed_point_min_its = 3
   fixed_point_max_its = 20
 []
+
+################################################################################
+# POSTPROCESORS
+################################################################################
 
 [VectorPostprocessors]
   [eigenvalues]
@@ -154,45 +182,14 @@
   []
 []
 
+################################################################################
+# MULTIAPPS and TRANSFERS for Navier-Stokes
+################################################################################
+
 [MultiApps]
-  [ns_dnp0]
+  [ns_dnp]
     type = FullSolveMultiApp
-    input_files = step11_ns_dnp0.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp1]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp1.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp2]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp2.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp3]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp3.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp4]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp4.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp5]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp5.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp6]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp6.i
-    execute_on = 'timestep_end'
-  []
-  [ns_dnp7]
-    type = FullSolveMultiApp
-    input_files = step11_ns_dnp7.i
+    input_files = 'step_11_ns_general.i'
     execute_on = 'timestep_end'
   []
 []
@@ -200,110 +197,64 @@
 [Transfers]
   [fission_source0]
     type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp0
+    to_multi_app = ns_dnp
     source_variable = fission_source
     variable = fission_source
   []
   [c0]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp0
+    from_multi_app = ns_dnp
     source_variable = 'c0'
     variable = 'c0'
   []
-
-  [fission_source1]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp1
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c1]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp1
+    from_multi_app = ns_dnp
     source_variable = 'c1'
     variable = 'c1'
   []
-
-  [fission_source2]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp2
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c2]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp2
+    from_multi_app = ns_dnp
     source_variable = 'c2'
     variable = 'c2'
   []
-
-  [fission_source3]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp3
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c3]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp3
+    from_multi_app = ns_dnp
     source_variable = 'c3'
     variable = 'c3'
   []
-
-  [fission_source4]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp4
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c4]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp4
+    from_multi_app = ns_dnp
     source_variable = 'c4'
     variable = 'c4'
   []
-
-  [fission_source5]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp5
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c5]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp5
+    from_multi_app = ns_dnp
     source_variable = 'c5'
     variable = 'c5'
   []
-
-  [fission_source6]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp6
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c6]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp6
+    from_multi_app = ns_dnp
     source_variable = 'c6'
     variable = 'c6'
   []
-
-  [fission_source7]
-    type = MultiAppNearestNodeTransfer
-    to_multi_app = ns_dnp7
-    source_variable = fission_source
-    variable = fission_source
-  []
   [c7]
     type =  MultiAppNearestNodeTransfer
-    from_multi_app = ns_dnp7
+    from_multi_app = ns_dnp
     source_variable = 'c7'
     variable = 'c7'
   []
 []
 
+################################################################################
+# SIMULATION OUTPUTS
+################################################################################
+
 [Outputs]
-  csv = true
-  # exodus = true
+  exodus = true
 []

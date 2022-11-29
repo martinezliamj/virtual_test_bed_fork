@@ -35,12 +35,12 @@ beta5   = 6.40917e-4
     thermal_expansion = ${alpha}
 
     # Boussinesq parameters
-    gravity = '0 -9.81 0'
+    gravity = '0 0 0'
 
     # Initial conditions
     initial_velocity = '0.5 1e-6 0'
     initial_temperature = 900
-    initial_pressure = 1e5
+    initial_pressure = 0
     ref_temperature = 900
 
     # Boundary conditions
@@ -57,7 +57,7 @@ beta5   = 6.40917e-4
 
     pin_pressure = true
     pinned_pressure_type = average
-    pinned_pressure_value = 1e5
+    pinned_pressure_value = 0
 
     # Numerical Scheme
     energy_advection_interpolation = 'upwind'
