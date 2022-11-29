@@ -87,7 +87,7 @@ mu = 50. # Viscosity [Pa.s]
     energy_advection_interpolation = 'upwind'
     momentum_advection_interpolation = 'upwind'
     mass_advection_interpolation = 'upwind'
-    energy_two_term_bc_expansion = false
+    energy_two_term_bc_expansion = true
 
     # energy_scaling = 0.001
     energy_scaling = 1e-7

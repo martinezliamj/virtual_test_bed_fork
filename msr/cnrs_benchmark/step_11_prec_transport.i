@@ -36,7 +36,7 @@ beta7   = 1.66016e-4
 # putting them in every kernel
 [GlobalParams]
   rhie_chow_user_object = 'ins_rhie_chow_interpolator'
-  two_term_boundary_expansion = false
+  two_term_boundary_expansion = true
   advected_interp_method = 'upwind'
   velocity_interp_method = 'average'
 []
@@ -298,8 +298,29 @@ beta7   = 1.66016e-4
   []
 []
 
-#[FVBCs]
-#[]
+[FVBCs]
+# Boundary conditions for lid-driven cavity flow
+  [lid_wall_x]
+    type = FVDirichletBC
+    boundary = 'top'
+    variable = 'vel_x'
+    value = 0.5
+  []
+
+  [rest_walls_x]
+    type = FVDirichletBC
+    boundary = 'bottom right left'
+    variable = 'vel_x'
+    value = 0.0
+  []
+
+  [all_walls_y]
+    type = FVDirichletBC
+    boundary = 'top bottom right left'
+    variable = 'vel_y'
+    value = 0.0
+  []
+[]
 
 ################################################################################
 # EXECUTION / SOLVE
