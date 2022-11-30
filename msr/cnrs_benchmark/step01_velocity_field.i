@@ -1,6 +1,19 @@
-mu=50.
-rho=2000.
+################################################################################
+## Molten Salt Fast Reactor - CNRS Benchmark step 0.1                         ##
+## Standalone application                                                     ##
+## This calculates the velocity field for the reactor                         ##
+################################################################################
 
+# Molecular thermophysical parameters
+mu=50.    # Viscosity [Pa.s]
+rho=2000. # Density [kg/m^3]
+
+################################################################################
+# GLOBAL PARAMETERS AND USER OBJECTS
+################################################################################
+
+# Defining global interpolation schemes and rc user object to advoid
+# putting them in every kernel
 advected_interp_method = 'average'
 velocity_interp_method = 'rc'
 
@@ -17,6 +30,10 @@ velocity_interp_method = 'rc'
   []
 []
 
+################################################################################
+# GEOMETRY
+################################################################################
+
 [Mesh]
   [gen]
     type = GeneratedMeshGenerator
@@ -29,6 +46,10 @@ velocity_interp_method = 'rc'
     ny = 100
   []
 []
+
+################################################################################
+# VARIABLES AND AUXVARIABLES
+################################################################################
 
 [Variables]
   [u]
@@ -55,6 +76,10 @@ velocity_interp_method = 'rc'
   []
 []
 
+################################################################################
+# FVKERNELS, AUXKERNELS, AND BCS
+################################################################################
+
 [AuxKernels]
 # Calculates magnitude of the velocity vector U
   [mag]
@@ -74,7 +99,6 @@ velocity_interp_method = 'rc'
     rho = ${rho}
   []
   [mean_zero_pressure]
-  # Constraint on the  problem nullspace or something (required for math reasons)
     type = FVIntegralValueConstraint
     variable = pressure
     lambda = lambda
@@ -95,7 +119,6 @@ velocity_interp_method = 'rc'
     momentum_component = 'x'
   []
   [u_pressure]
-  # Takes care of the grad(p) term
     type = INSFVMomentumPressure
     variable = u
     momentum_component = 'x'
@@ -117,7 +140,6 @@ velocity_interp_method = 'rc'
     momentum_component = 'y'
   []
   [v_pressure]
-  # Takes care of the grad(p) term
     type = INSFVMomentumPressure
     variable = v
     momentum_component = 'y'
@@ -156,14 +178,21 @@ velocity_interp_method = 'rc'
   []
 []
 
+################################################################################
+# EXECUTION / SOLVE
+################################################################################
+
 [Executioner]
-# Solving the steady-state versions of these equations
   type = Steady
   solve_type = 'NEWTON'
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type'
   petsc_options_value = 'asm      100                lu           NONZERO'
   nl_rel_tol = 1e-12
 []
+
+################################################################################
+# SIMULATION OUTPUTS
+################################################################################
 
 [Outputs]
   exodus = true

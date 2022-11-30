@@ -5,7 +5,7 @@
 ################################################################################
 
 # Molecular thermophysical parameters
-mu = 50.0 # Viscosity: [Pa.s]
+mu = 50.0   # Viscosity: [Pa.s]
 rho = 2000. # Density: [kg/m^3]
 
 # Turbulent Schmidt Number

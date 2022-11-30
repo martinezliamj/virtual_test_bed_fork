@@ -1,4 +1,21 @@
+################################################################################
+## Molten Salt Fast Reactor - CNRS Benchmark step 0.2                         ##
+## Standalone application                                                     ##
+## This calculates neutronics for the reactor, ignoring fluid motion          ##
+################################################################################
+
+# Reactor power is held constant at 1 GW for this step
 reactor_power = 1e9
+
+[PowerDensity]
+  power = ${reactor_power}
+  power_density_variable = power
+  power_scaling_postprocessor = Normalization
+[]
+
+################################################################################
+# GEOMETRY
+################################################################################
 
 [Mesh]
   [gen]
@@ -12,6 +29,10 @@ reactor_power = 1e9
     ny = 100
   []
 []
+
+################################################################################
+# TRANSPORT SYSTEMS
+################################################################################
 
 [TransportSystems]
   particle = neutron
@@ -27,11 +48,9 @@ reactor_power = 1e9
   []
 []
 
-[PowerDensity]
-  power = ${reactor_power}
-  power_density_variable = power
-  power_scaling_postprocessor = Normalization
-[]
+################################################################################
+# AUXVARIABLES AND AUXKERNELS
+################################################################################
 
 [AuxVariables]
 # Fuel temperature - held constant for this step
@@ -44,96 +63,7 @@ reactor_power = 1e9
     order = FIRST
     family = L2_LAGRANGE
   []
-  # Making a variable for the normalized power density
-  #[normalized_power_density]
-  #  family = MONOMIAL
-  #  order = CONSTANT
-  #[]
-  # Making variables for the scaled neutron fluxes
-  #[scaled_sflux_g0] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[scaled_sflux_g1] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[scaled_sflux_g2] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[scaled_sflux_g3] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[scaled_sflux_g4] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[scaled_sflux_g5] # Scaled fast flux n/m^2/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #[]
-  #[FissionRR] # Fission rate density fissions/m^3/s
-  #  family = L2_LAGRANGE
-  #  order = FIRST
-  #  initial_condition = 0.0
-  #[]
 []
-
-#[AuxKernels]
-#  [normalized_power_density]
-#    type = ScaleAux
-#    multiplier = ${fparse 1/reactor_power}
-#    source_variable = pow_den
-#    variable = normalized_power_density
-#  []
-#  # Scaling the neutron fluxes with the reactor power
-#  [scaled_sflux_g0] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g0
-#    source_variable = sflux_g0
-#  []
-#  [scaled_sflux_g1] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g1
-#    source_variable = sflux_g1
-#  []
-#  [scaled_sflux_g2] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g2
-#    source_variable = sflux_g2
-#  []
-#  [scaled_sflux_g3] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g3
-#    source_variable = sflux_g3
-#  []
-#  [scaled_sflux_g4] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g4
-#    source_variable = sflux_g4
-#  []
-#  [scaled_sflux_g5] #scaled flux unit is in n/m^2/s
-#    type = ScaleAux
-#    scale_factor = power_scaling
-#    variable = scaled_sflux_g5
-#    source_variable = sflux_g5
-#  []
-#  # Sets the scaling and which fluxes get scaled
-#  [FissionRR]
-#    type = VectorReactionRate
-#    variable = FissionRR
-#    cross_section = sigma_fission
-#    scale_factor = power_scaling
-#    scalar_flux = 'sflux_g0 sflux_g1 sflux_g2 sflux_g3 sflux_g4 sflux_g5'
-#  []
-#[]
 
 [AuxKernels]
   [fission_rate_density]
@@ -146,6 +76,11 @@ reactor_power = 1e9
     block = '0'
   []
 []
+
+################################################################################
+# MATERIALS
+################################################################################
+
 [Materials]
   [nm]
     type = ConstantNeutronicsMaterial
@@ -157,6 +92,10 @@ reactor_power = 1e9
     plus = true
   []
 []
+
+################################################################################
+# POSTPROCESSORS
+################################################################################
 
 [VectorPostprocessors]
   [eigenvalues]
@@ -192,27 +131,11 @@ reactor_power = 1e9
     vector_name = eigen_values_real
     index = 0
   []
-  #[AA_line_values]
-  # Temperature distribution along the x-midline
-  #  type = LineValueSampler
-   # start_point = '0 1 0'
-   # end_point = '2 1 0'
-   # variable = 'dnp'
-   # num_points = 9
-   # execute_on = 'TIMESTEP_END'
-   # sort_by = x
-  #[]
-  #[BB_line_values]
-  # Temperature distribution along the y-midline
-  #  type = LineValueSampler
-  #  start_point = '1 0 0'
-  #  end_point = '1 2 0'
-   # variable = 'dnp'
-   # num_points = 9
-    #execute_on = 'TIMESTEP_END'
-    #sort_by = y
-  #[]
 []
+
+################################################################################
+# EXECUTION / SOLVE
+################################################################################
 
 [Executioner]
   type = Eigenvalue
@@ -223,6 +146,10 @@ reactor_power = 1e9
   nl_abs_tol = 1e-9
   picard_max_its = 100
 []
+
+################################################################################
+# SIMULATION OUTPUTS
+################################################################################
 
 [Outputs]
   exodus = true

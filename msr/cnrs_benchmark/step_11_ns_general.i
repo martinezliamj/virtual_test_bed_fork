@@ -6,10 +6,10 @@
 
 # Molecular thermophysical parameters
 alpha = 0.0002 # Thermal expansion coefficient [1/K]
-rho=2000. # Density [kg/m^3]
-cp = 3075 # Volumetric heat capacity [J/m^3 K]
-k = 0.01 # Thermal conductivity [W/m K]
-mu = 50. # Viscosity [Pa.s]
+rho=2000.      # Density [kg/m^3]
+cp = 3075      # Volumetric heat capacity [J/m^3 K]
+k = 0.01       # Thermal conductivity [W/m K]
+mu = 50.       # Viscosity [Pa.s]
 
 ################################################################################
 # OPTIONAL DEBUG BLOCK

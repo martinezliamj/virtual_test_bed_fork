@@ -1,21 +1,22 @@
-mu = 50.
-rho = 2000.
-k = 0.0000001
-cp = 3075.
-# Remove the comments, and also maybe the commented blocks - have to ask Ramiro about that
+################################################################################
+## Molten Salt Fast Reactor - CNRS Benchmark step 0.3                         ##
+## Standalone application                                                     ##
+## This calculates the temeprature field for the reactor                      ##
+################################################################################
+
+# Molecular thermophysical parameters
+mu = 50.      # Viscosity [Pa.s]
+rho = 2000.   # Density [kg/m^3]
+k = 0.0000001 # Thermal conductivity [W/m K]
+cp = 3075.    # Volumetric heat capacity [J/m^3 K]
+
+# Defining global interpolation schemes and rc user object to advoid
+# putting them in every kernel
 advected_interp_method = 'average'
 velocity_interp_method = 'rc'
 
 [GlobalParams]
   rhie_chow_user_object = 'rc'
-[]
-
-[Mesh]
-  [file]
-    type = FileMeshGenerator
-    file = diff_out.e
-    use_for_exodus_restart = true
-  []
 []
 
 [UserObjects]
@@ -26,6 +27,39 @@ velocity_interp_method = 'rc'
     pressure = pressure
   []
 []
+
+################################################################################
+# GEOMETRY
+################################################################################
+
+[Mesh]
+  [file]
+    type = FileMeshGenerator
+    file = diff_out.e
+    use_for_exodus_restart = true
+  []
+[]
+
+################################################################################
+# MATERIALS
+################################################################################
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = 'cp k'
+    prop_values = '${cp} ${k}'
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = 'temperature'
+    rho = ${rho}
+  []
+[]
+
+################################################################################
+# VARIABLES AND AUXVARIABLES
+################################################################################
 
 [Variables]
   [u]
@@ -55,10 +89,14 @@ velocity_interp_method = 'rc'
   [power_dummy]
     order = FIRST
     family = LAGRANGE
-    # This power variable comes from a file from step 0.2
+    # This power variable comes from 'step02.i'
     initial_from_file_var = power
   []
 []
+
+################################################################################
+# FVKERNELS AND AUXKERNELS
+################################################################################
 
 [AuxKernels]
   [fission_source]
@@ -125,11 +163,8 @@ velocity_interp_method = 'rc'
     pressure = pressure
   []
 
-  # All the blocks up to here are for the mass conservation equation in step 0.1
-  # All the blocks below are for temperature step 0.3
 
   [temp_conduction]
-  # Difusion term for the temperature
     type = FVDiffusion
     coeff = ${k}
     variable = temperature
@@ -142,19 +177,21 @@ velocity_interp_method = 'rc'
   []
 
   [temp_sinksource]
-  # Term for temperature loss to elsewhere
     type = NSFVEnergyAmbientConvection
     variable = temperature
     T_ambient = 900.
-    alpha = '1e6'
+    alpha = '1e6' # Convective heat transfer coefficient [W/m^3 K]
   []
   [temp_fissionpower]
-  # Source term for the temperature
     type = FVCoupledForce
     variable = temperature
     v = power
   []
 []
+
+################################################################################
+# BOUNDARY CONDITIONS
+################################################################################
 
 [FVBCs]
   [top_x]
@@ -175,8 +212,7 @@ velocity_interp_method = 'rc'
     boundary = 'left right top bottom'
     function = 0
   []
-  # Above blocks are the same BCs as in step 0.1
-  # Below block is a new BC for the temperature, defining the walls to be adiabatic - no heat transfer into/out of the box
+  # Adiabatic BC for the temperature
   [adiabatic]
     type = FVNeumannBC
     variable = temperature
@@ -185,27 +221,11 @@ velocity_interp_method = 'rc'
   []
 []
 
-[Materials]
-  #[const]
-  # Defines k and cp as material properties
-  #  type = ADGenericConstantMaterial
-  #  prop_names = 'k cp'
-  #  prop_values = '${k} ${cp}'
-  #[]
-  [functor_constants]
-    type = ADGenericFunctorMaterial
-    prop_names = 'cp k'
-    prop_values = '${cp} ${k}'
-  []
-  [ins_fv]
-    type = INSFVEnthalpyMaterial
-    temperature = 'temperature'
-    rho = ${rho}
-  []
-[]
+################################################################################
+# EXECUTION / SOLVE
+################################################################################
 
 [Executioner]
-# Solving the steady-state versions of these equations
   type = Steady
   solve_type = 'NEWTON'
   #line_search = 'none'
@@ -213,6 +233,10 @@ velocity_interp_method = 'rc'
   petsc_options_value = 'lu NONZERO'
   nl_rel_tol = 1e-12
 []
+
+################################################################################
+# SIMULATION OUTPUTS
+################################################################################
 
 [Outputs]
   exodus = true
