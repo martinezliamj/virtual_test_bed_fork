@@ -6,10 +6,10 @@
 
 # Molecular thermophysical parameters
 alpha = 0.0002 # Thermal expansion coefficient [1/K]
-rho=2000.      # Density [kg/m^3]
-cp = 3075      # Volumetric heat capacity [J/m^3 K]
-k = 0.01       # Thermal conductivity [W/m K]
-mu = 50.       # Viscosity [Pa.s]
+rho = 2000. # Density [kg/m^3]
+cp = 3075 # Volumetric heat capacity [J/m^3 K]
+k = 0.01 # Thermal conductivity [W/m K]
+mu = 50. # Viscosity [Pa.s]
 
 ################################################################################
 # OPTIONAL DEBUG BLOCK
@@ -18,7 +18,6 @@ mu = 50.       # Viscosity [Pa.s]
 [Debug]
   show_var_residual_norms = True
 []
-
 
 ################################################################################
 # GEOMETRY
@@ -124,17 +123,17 @@ mu = 50.       # Viscosity [Pa.s]
   [vel_x]
     type = 'INSFVVelocityVariable'
     initial_condition = 0.5
-    block=0
+    block = 0
   []
   [vel_y]
     type = 'INSFVVelocityVariable'
     initial_condition = 1e-6
-    block=0
+    block = 0
   []
   [pressure]
     type = 'INSFVPressureVariable'
     initial_condition = 1e5
-    block=0
+    block = 0
   []
   [T_fluid]
     type = 'INSFVEnergyVariable'
@@ -148,7 +147,6 @@ mu = 50.       # Viscosity [Pa.s]
 [AuxVariables]
   [fission_source]
     type = MooseVariableFVReal
-    initial_condition = 0.0
   []
   [c0]
     type = MooseVariableFVReal
@@ -182,6 +180,42 @@ mu = 50.       # Viscosity [Pa.s]
     type = MooseVariableFVReal
     initial_condition = 0.0
   []
+  [a_u]
+    type = MooseVariableFVReal
+  []
+  [a_v]
+    type = MooseVariableFVReal
+  []
+[]
+
+[AuxKernels]
+  [ax_out]
+    type = ADFunctorElementalAux
+    functor = ax
+    variable = a_u
+    execute_on = timestep_end
+  []
+  [ay_out]
+    type = ADFunctorElementalAux
+    functor = ay
+    variable = a_v
+    execute_on = timestep_end
+  []
+[]
+
+[ICs]
+  [source_ic]
+    type = FunctionIC
+    variable = 'fission_source'
+    function = source_function
+  []
+[]
+
+[Functions]
+  [source_function]
+    type = ParsedFunction
+    value = '1000000*sin(x*pi/2)*sin(y*pi/2)'
+  []
 []
 
 ################################################################################
@@ -197,16 +231,6 @@ mu = 50.       # Viscosity [Pa.s]
   []
 []
 
-[UserObjects]
-  [rc]
-    type = INSFVRhieChowInterpolator
-    u = vel_x
-    v = vel_y
-    pressure = pressure
-    block = '0'
-  []
-[]
-
 ################################################################################
 # EXECUTION / SOLVE
 ################################################################################
@@ -216,7 +240,7 @@ mu = 50.       # Viscosity [Pa.s]
   solve_type = 'NEWTON'
   petsc_options_iname = '-pc_type -pc_factor_shift_type'
   petsc_options_value = 'lu NONZERO'
-  nl_rel_tol = 1e-5
+  nl_rel_tol = 1e-10
 []
 
 ################################################################################
@@ -256,6 +280,18 @@ mu = 50.       # Viscosity [Pa.s]
     to_multi_app = prec_transport
     source_variable = vel_y
     variable = vel_y
+  []
+  [a_x]
+    type = MultiAppCopyTransfer
+    to_multi_app = prec_transport
+    source_variable = a_u
+    variable = a_x
+  []
+  [a_y]
+    type = MultiAppCopyTransfer
+    to_multi_app = prec_transport
+    source_variable = a_v
+    variable = a_y
   []
   [pressure]
     type = MultiAppCopyTransfer

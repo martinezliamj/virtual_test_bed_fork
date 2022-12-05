@@ -5,7 +5,7 @@
 ################################################################################
 
 # Molecular thermophysical parameters
-mu = 50.0   # Viscosity: [Pa.s]
+mu = 50.0 # Viscosity: [Pa.s]
 rho = 2000. # Density: [kg/m^3]
 
 # Turbulent Schmidt Number
@@ -15,22 +15,21 @@ Sc_t = 2.0e8 # Schmidt number: [-]
 # [1/s]. Beta values are production fractions.
 # Using eight delayed neutron precursor families
 lambda0 = 1.24667e-2
-beta0   = 2.33102e-4
+beta0 = 2.33102e-4
 lambda1 = 2.82917e-2
-beta1   = 1.03262e-3
+beta1 = 1.03262e-3
 lambda2 = 4.25244e-2
-beta2   = 6.81878e-4
+beta2 = 6.81878e-4
 lambda3 = 1.33042e-1
-beta3   = 1.37726e-3
+beta3 = 1.37726e-3
 lambda4 = 2.92467e-1
-beta4   = 2.14493e-3
+beta4 = 2.14493e-3
 lambda5 = 6.66488e-1
-beta5   = 6.40917e-4
+beta5 = 6.40917e-4
 lambda6 = 1.63478
-beta6   = 6.05805e-4
+beta6 = 6.05805e-4
 lambda7 = 3.55460
-beta7   = 1.66016e-4
-
+beta7 = 1.66016e-4
 
 # Defining global interpolation schemes and rc user object to advoid
 # putting them in every kernel
@@ -38,7 +37,7 @@ beta7   = 1.66016e-4
   rhie_chow_user_object = 'ins_rhie_chow_interpolator'
   two_term_boundary_expansion = true
   advected_interp_method = 'upwind'
-  velocity_interp_method = 'average'
+  velocity_interp_method = 'rc'
 []
 
 ################################################################################
@@ -71,6 +70,8 @@ beta7   = 1.66016e-4
     type = INSFVRhieChowInterpolator
     u = vel_x
     v = vel_y
+    a_u = a_x
+    a_v = a_y
     pressure = pressure
   []
 []
@@ -126,9 +127,14 @@ beta7   = 1.66016e-4
     type = 'INSFVVelocityVariable'
     initial_condition = 1.0
   []
+  [a_x]
+    type = 'MooseVariableFVReal'
+  []
+  [a_y]
+    type = 'MooseVariableFVReal'
+  []
   [pressure]
     type = 'INSFVPressureVariable'
-    initial_condition = 1.0
   []
 []
 
@@ -168,42 +174,42 @@ beta7   = 1.66016e-4
 
   [c0_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c0
   []
   [c1_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c1
   []
   [c2_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c2
   []
   [c3_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c3
   []
   [c4_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c4
   []
   [c5_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c5
   []
   [c6_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c6
   []
   [c7_diffusion]
     type = FVDiffusion
-    coeff = ${fparse mu/Sc_t/rho}
+    coeff = '${fparse mu/Sc_t/rho}'
     variable = c7
   []
 
@@ -299,7 +305,7 @@ beta7   = 1.66016e-4
 []
 
 [FVBCs]
-# Boundary conditions for lid-driven cavity flow
+  # Boundary conditions for lid-driven cavity flow
   [lid_wall_x]
     type = FVDirichletBC
     boundary = 'top'
