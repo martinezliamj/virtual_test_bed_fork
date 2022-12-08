@@ -19,7 +19,7 @@ Here we define the geometry of the reactor as a simple two-dimensional square.
 
 !listing msr/cnrs_benchmark/step02.i block=TransportSystems
 
-Here we define the Transportsystems block, a Griffin module that solves the nuetronics eigenvalue problem.
+Here we define the Transportsystems module, a Griffin module that solves the neutronics eigenvalue problem.
 
 ## AuxVariables and AuxKernels
 
@@ -41,7 +41,7 @@ This block provides the cross sections used in the TransportSystems module.
 
 !listing msr/cnrs_benchmark/step02.i block=Executioner
 
-This block uses the PJFNK solver to solve the eiegenvalue criticality problem.
+This block uses the PJFNK solver to solve the eigenvalue criticality problem.
 
 !listing msr/cnrs_benchmark/step02.i block=Outputs
 

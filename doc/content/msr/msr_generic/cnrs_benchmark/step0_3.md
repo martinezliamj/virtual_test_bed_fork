@@ -15,7 +15,7 @@ In the next sections, each block of the file is presented and discussed.
 
 !listing msr/cnrs_benchmark/step03_temperature_dist.i block=UserObjects
 
-Thess blocks define the Rhie-Chow interpolation method, which is used throughout the entire input file.
+These blocks define the Rhie-Chow interpolation method, which is used throughout the entire input file.
 
 ## Geometry
 
