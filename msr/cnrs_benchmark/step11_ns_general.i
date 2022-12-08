@@ -53,10 +53,6 @@ mu = 50. # Viscosity [Pa.s]
     specific_heat = 'cp'
     thermal_expansion = ${alpha}
 
-    # External variables
-    #velocity_variable = 'u2 v2'
-    #pressure_variable = 'p2'
-
     # Boussinesq parameters
     gravity = '0 0 0'
 
@@ -88,31 +84,10 @@ mu = 50. # Viscosity [Pa.s]
     mass_advection_interpolation = 'upwind'
     energy_two_term_bc_expansion = true
 
-    # energy_scaling = 0.001
     energy_scaling = 1e-7
     momentum_scaling = 0.1
-
-    # Delayed neutron presursors solved in subapp
-    #passive_scalar_inlet_types = 'fixed-value'
-    #passive_scalar_inlet_function = '0' # Placeholder
-    # Precursor advection, diffusion and source term
-    #passive_scalar_names = 'c0 c1 c2 c3 c4 c5 c6 c7'
-    #passive_scalar_schmidt_number = '${Sc_t} ${Sc_t} ${Sc_t} ${Sc_t}
-    #                                 ${Sc_t} ${Sc_t} ${Sc_t} ${Sc_t}'
-    #passive_scalar_coupled_source = 'fission_source c0; fission_source c1;
-    #                                 fission_source c2; fission_source c3;
-    #                                 fission_source c4; fission_source c5;
-    #                                 fission_source c6; fission_source c7'
-    #passive_scalar_coupled_source_coeff = '${beta0} ${lambda0}; ${beta1} ${lambda1};
-    #                                       ${beta2} ${lambda2}; ${beta3} ${lambda3};
-    #                                       ${beta4} ${lambda4}; ${beta5} ${lambda5};
-    #                                       ${beta6} ${lambda6}; ${beta7} ${lambda7}'
   []
 []
-
-#[GlobalParams]
-#  rhie_chow_user_object = 'ins_rhie_chow_interpolator' #'rc'
-#[]
 
 ################################################################################
 # VARIABLES and AUXVARIABLES
@@ -140,9 +115,6 @@ mu = 50. # Viscosity [Pa.s]
     initial_condition = 900
   []
 []
-
-# [FVBCs]
-# []
 
 [AuxVariables]
   [fission_source]
@@ -250,19 +222,13 @@ mu = 50. # Viscosity [Pa.s]
 [MultiApps]
   [prec_transport]
     type = FullSolveMultiApp
-    input_files = 'step_11_prec_transport.i'
+    input_files = 'step11_prec_transport.i'
     execute_on = 'timestep_end'
     # no_backup_and_restore = true
   []
 []
 
 [Transfers]
-  #[power_density]
-  #  type = MultiAppCopyTransfer
-  #  to_multi_app = prec_transport
-  #  source_variable = power_density
-  #  variable = power_density
-  #[]
   [fission_source]
     type = MultiAppCopyTransfer
     to_multi_app = prec_transport

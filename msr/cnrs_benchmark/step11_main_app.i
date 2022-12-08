@@ -189,7 +189,7 @@
 [MultiApps]
   [ns_dnp]
     type = FullSolveMultiApp
-    input_files = 'step_11_ns_general.i'
+    input_files = 'step11_ns_general.i'
     execute_on = 'timestep_end'
   []
 []
